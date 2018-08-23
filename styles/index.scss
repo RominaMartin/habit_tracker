@@ -1,0 +1,41 @@
+$dayContainerDim: 104px;
+$calendarDim: $dayContainerDim * 7;
+$squareDim: 50px;
+$circleDim: 35px;
+
+#calendar {
+    display: inline-block;
+    width: $calendarDim;
+}
+
+.dayContainer {
+  width: $dayContainerDim;
+  margin: 0;
+  font-size: 0;
+  position: relative;
+  display: inline-block;
+}
+.dayContainer .square {
+  height: $squareDim;
+  width: $squareDim;
+  border: 1px solid;
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+}
+.dayContainer .circle {
+  position: absolute;
+  width: $circleDim;
+  height: $circleDim;
+  background: white;
+  border-radius: 50%;
+  top: 35px;
+  left: 35px;
+  border: 1px solid;
+  z-index: 0;
+}
+.dayContainer .circle .day {
+  font-size: 20px;
+  text-align: center;
+  line-height: $circleDim;
+}
