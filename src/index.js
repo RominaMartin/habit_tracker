@@ -6,16 +6,15 @@ const DAY_NAMES = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const CURRENT_DATE = new Date();
 
 function init() {
-    console.log(getDaysFromCurrentMonth());
-    console.log(getMonthDayStart());
+    console.log(window.localStorage);
+    let currentData = {};
+    currentData[CURRENT_DATE.getMonth()] = {};
+
+    localStorage.setItem("month", JSON.stringify(currentData));
+    console.log(window.localStorage);
     createCalendarStructure();
 }
-/*** UTILS ***/
-var getDaysFromCurrentMonth = () => new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth() + 1, 0).getDate();
-var getMonthDayStart = () => {
-    let startDay = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), 1).getDay();
-    return startDay === 0 ? 6 : (startDay - 1);
-}
+
 
 var createCalendarStructure = () => {
     const days = getDaysFromCurrentMonth();
@@ -42,6 +41,13 @@ var createCalendarStructure = () => {
     
         CALENDAR.appendChild(dayContainer);
     }
+}
+
+/*** UTILS ***/
+var getDaysFromCurrentMonth = () => new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth() + 1, 0).getDate();
+var getMonthDayStart = () => {
+    let startDay = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), 1).getDay();
+    return startDay === 0 ? 6 : (startDay - 1);
 }
 
 init();

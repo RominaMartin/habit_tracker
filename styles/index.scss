@@ -3,9 +3,15 @@ $calendarDim: $dayContainerDim * 7;
 $squareDim: 50px;
 $circleDim: 35px;
 
+body {
+  font-family: Catamaran;
+  text-align: center;
+}
+
 #calendar {
     display: inline-block;
     width: $calendarDim;
+    text-align: left;
 }
 
 .dayContainer {
@@ -35,7 +41,7 @@ $circleDim: 35px;
   z-index: 0;
 }
 .dayContainer .circle .day {
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
   line-height: $circleDim;
 }
