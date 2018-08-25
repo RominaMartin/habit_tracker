@@ -2,12 +2,8 @@ import "../styles/index.scss";
 /*** CONSTANTS ***/
 const CALENDAR = document.getElementById("calendar");
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const DAY_NAMES = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const CURRENT_DATE = new Date();
-
-let testData = {  0: {0: true, 1: false, 2: true, 3: false, 4: true},
-                  1: {0: false, 1: true, 2: true, 3: true, 4: true}
-               };
 
 let TASKS = {
     0: {color: "#f0f", label: "15 minutes exercise"},
@@ -19,6 +15,7 @@ let TASKS = {
 
 function init() {
     checkLocalStorage();
+    createDateInfo();
     createCalendarStructure();
 }
 
@@ -82,10 +79,20 @@ var createCalendarStructure = () => {
     }
 }
 
+var createDateInfo = () => {
+    DAY_NAMES.forEach(day => {
+        let dayLabel = document.createElement("span");
+        dayLabel.textContent = day;
+        document.getElementById("daysLabels").appendChild(dayLabel);
+    });
+    document.getElementById("monthLabel").innerText = MONTH_NAMES[CURRENT_DATE.getMonth()];
+}
+
 var getTaskStatus = (day, task) => {
     let currentData = getCurrentLocalStorageData();
     return currentData[day][task];
 }
+
 var setTaskStatus = (day, task, status) => {
     let currentData = getCurrentLocalStorageData();
     currentData[day][task] = status;
