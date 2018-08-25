@@ -6,6 +6,7 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist')
   },
+  mode: "development",
   watch: true,
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
