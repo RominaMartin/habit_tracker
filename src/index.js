@@ -23,13 +23,14 @@ var checkLocalStorage = () => {
 
     if(window.localStorage.currentMonth === undefined || window.localStorage.data === undefined) {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
-        let currentData = {[CURRENT_DATE.getMonth()]: {}};
+        let currentData = {[CURRENT_DATE.getMonth()]: {tasks: {0: {color: "#f0f", label: "15 minutes exercise"}}, data: {}}};
         localStorage.setItem("data", JSON.stringify(currentData));
         
     } else if(window.localStorage.currentMonth !== undefined && window.localStorage.currentMonth != CURRENT_DATE.getMonth()) {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
         let previousData = JSON.parse(window.localStorage.data);
-        let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {}};
+        let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {0: {color: "#f0f", label: "15 minutes exercise"}}, data: {}}};
+        // let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {}};
         localStorage.setItem("data", JSON.stringify(currentData));
 
         // SHOW MONTH CHANGED!
@@ -39,7 +40,7 @@ var checkLocalStorage = () => {
 var createCalendarStructure = () => {
     const days = getDaysFromCurrentMonth();
     const startDay = getMonthDayStart();
-    let currentData = getCurrentLocalStorageData();
+    let currentData = getCurrentLocalStorageData().data;
 
     for(let i = 0; i < (days + startDay); i++) {
         let dayContainer = document.createElement("div");
@@ -72,7 +73,8 @@ var createCalendarStructure = () => {
             }
         }
 
-        let data = {[CURRENT_DATE.getMonth()]: {...JSON.parse(window.localStorage.data), ...currentData}};
+        let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: getCurrentLocalStorageData().tasks, data: currentData}};
+        let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
         localStorage.setItem("data", JSON.stringify(data));
 
         CALENDAR.appendChild(dayContainer);
@@ -89,18 +91,17 @@ var createDateInfo = () => {
 }
 
 var getTaskStatus = (day, task) => {
-    let currentData = getCurrentLocalStorageData();
+    let currentData = getCurrentLocalStorageData().data;
     return currentData[day][task];
 }
 
 var setTaskStatus = (day, task, status) => {
-    let currentData = getCurrentLocalStorageData();
+    let currentData = getCurrentLocalStorageData().data;
     currentData[day][task] = status;
 
-    let data = {[CURRENT_DATE.getMonth()]: {...JSON.parse(window.localStorage.data), ...currentData}};
-
+    let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: getCurrentLocalStorageData().tasks, data: currentData}};
+    let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
     localStorage.setItem("data", JSON.stringify(data));
-    // testData[day][task] = status;
 }
 
 var setColorTaskBackground = (element, task, completed) => {
