@@ -62,7 +62,7 @@ var createCalendarStructure = () => {
     
                 task.className = j !== 4 ? "square" : "circle";
                 day.className = "day";
-                day.innerText = dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1;
+                day.innerText = task.className === "circle" ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
                 
                 setColorTaskBackground(task, j, currentData[dayNumber][j]);
 

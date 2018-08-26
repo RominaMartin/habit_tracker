@@ -1,60 +1,101 @@
-$dayContainerDim: 104px;
-$calendarDim: $dayContainerDim * 7;
-$squareDim: 50px;
-$circleDim: 35px;
-$genericPadding: 10px;
-
 body {
   font-family: Catamaran;
   text-align: center;
 }
-
-#calendar {
-    display: inline-block;
+@mixin styling($dayContainerDim, $calendarDim, $circleDim, $circleSpace) {
+  #calendar {
+    display: grid;
+    justify-content: center;
+    grid-template: repeat(5, $dayContainerDim) / repeat(7, $dayContainerDim);
+  }
+  
+  .dayContainer {
+    position: relative;
+    outline: 1px solid;
+    margin-top: 1px;
+    margin-left: 1px;
+    display: grid;
+    grid-template: 50% 50% / 50% 50%;
+  }
+  
+  .square:nth-child(1) {border-bottom: 1px solid; border-right:  1px solid;}
+  .square:nth-child(2) {border-bottom: 1px solid;}
+  .square:nth-child(3) {border-right:  1px solid;}
+  
+  .dayContainer .circle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    border: 1px solid;
+    z-index: 0;
+    width: $circleDim;
+    height: $circleDim;
+    top: $circleDim + $circleSpace;
+    left: $circleDim + $circleSpace;
+  }
+  .dayContainer .circle .day {
+    font-size: $circleDim/2;
+    text-align: center;
+    line-height: $circleDim;
+    cursor: default;
+    user-select: none;
+  }
+  
+  #daysLabels {
     width: $calendarDim;
+    margin: 0 auto;
+    font-size: $circleDim/2;
+  }
+  
+  #daysLabels span {
+    width: $dayContainerDim;
+    display: inline-block;
+  }
+  
+  #monthLabel {
+    margin: 0;
+  }
+  
+  #info {
+    width: $calendarDim;
+    margin: 0 auto;
+  }
+  
+  #taskLabels {
+    width: 50%;
     text-align: left;
+    list-style: none;
+    padding: 10px;
+  }
+  #taskLabels > li {
+    font-size: $circleDim/2;
+  }
+  
+  #taskLabels > li span {
+    width: 1.5vw;
+    height: 1.5vw;
+    display: inline-block;
+    margin-right: 1vw;
+    background: red;
+    position: relative;
+    top: .45vw;
+  }
 }
 
-.dayContainer {
-  width: $dayContainerDim;
-  margin: 0;
-  font-size: 0;
-  position: relative;
-  display: inline-block;
-}
-.dayContainer .square {
-  height: $squareDim;
-  width: $squareDim;
-  border: 1px solid #333;
-  display: inline-flex;
-  margin: 0;
-  padding: 0;
+@media screen and (max-width: 1170px) {
+  @include styling(
+    $dayContainerDim: 7vw,
+    $calendarDim: 7vw * 7,
+    $circleDim: 2vw,
+    $circleSpace: 0.25vw
+  );
 }
 
-.dayContainer .circle {
-  position: absolute;
-  width: $circleDim;
-  height: $circleDim;
-  background: white;
-  border-radius: 50%;
-  top: 35px;
-  left: 35px;
-  border: 1px solid;
-  z-index: 0;
-}
-.dayContainer .circle .day {
-  font-size: 16px;
-  text-align: center;
-  line-height: $circleDim;
-}
-
-#daysLabels {
-  width: $calendarDim;
-  margin: 0 auto;
-  padding: $genericPadding;
-}
-
-#daysLabels span {
-  width: $dayContainerDim;
-  display: inline-block;
+@media screen and (min-width: 1170px) {
+  @include styling(
+    $dayContainerDim: 5vw,
+    $calendarDim: 5vw * 7,
+    $circleDim: 1.5vw,
+    $circleSpace: 0.25vw
+  );
 }
