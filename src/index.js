@@ -31,7 +31,7 @@ var checkLocalStorage = () => {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
         let previousData = JSON.parse(window.localStorage.data);
         let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
-        // let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {}};
+
         localStorage.setItem("data", JSON.stringify(currentData));
 
         // SHOW MONTH CHANGED!
@@ -47,6 +47,7 @@ var createCalendarStructure = () => {
         let dayContainer = document.createElement("div");
         dayContainer.className = "dayContainer";
         if(i < startDay) {
+            dayContainer.className += " emptyDay";
             // Add class to empty start
         } else {
             let dayNumber = i - startDay;
@@ -93,6 +94,7 @@ var createDateInfo = () => {
 
 var createInfoStructure = () => {    
     let taskSquares = document.querySelectorAll("#taskLabels > li span");
+    let inputs = document.querySelectorAll("#taskLabels > li input");
 
     for(let i = 0; i < 5; i++) {
         let task = document.createElement("div");
@@ -104,9 +106,25 @@ var createInfoStructure = () => {
         taskSquares[i].style.background = TASKS[i].color;
         task.style.background = TASKS[i].color;
 
+        inputs[i].onchange = (inputData) => {taskNameChanged(i, inputData)};
+
         task.appendChild(day);
         document.getElementById("taskExample").appendChild(task);
     }
+}
+
+var taskNameChanged = (task, inputData) => {
+    let value = inputData.target.value;
+    let colorContainers = document.querySelectorAll("#taskLabels > li span");
+
+    let current = getCurrentLocalStorageData();
+    let currentTasks = current.tasks;
+
+    currentTasks = {...currentTasks, [task]: {color: colorContainers[task].style.background, label: value}};
+
+    let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: currentTasks, data: current.data}};
+    let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
+    localStorage.setItem("data", JSON.stringify(data));
 }
 
 var getTaskStatus = (day, task) => {

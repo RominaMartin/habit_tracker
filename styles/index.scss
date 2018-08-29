@@ -1,10 +1,13 @@
 $minWidth: 450px;
 $borderColor: #999;
+$baseTextColor: #666;
+$emptyDayColor: #eee;
 
 body {
   font-family: Catamaran;
   text-align: center;
   min-width: $minWidth;
+  color: $baseTextColor;
 }
 
 @mixin styling($dayContainerDim, $calendarDim, $circleDim, $circleSpace) {
@@ -59,6 +62,7 @@ body {
   
   #monthLabel {
     margin: 0;
+    text-shadow: 2px 2px 2px #ccc;
   }
 
   #info {
@@ -95,6 +99,7 @@ body {
     padding-bottom: 0;
     outline: none;
     width: 70%;
+    color: $baseTextColor;
   } 
 
   #taskExample {
@@ -102,6 +107,10 @@ body {
     height: $dayContainerDim;
     position: relative;
     top: 50px;
+  }
+  
+  .emptyDay {
+    background: $emptyDayColor;
   }
 }
 
