@@ -6,30 +6,31 @@ const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 const CURRENT_DATE = new Date();
 
 let TASKS = {
-    0: {color: "#f0f", label: "15 minutes exercise"},
-    1: {color: "#f00", label: "15 minutes reading"},
-    2: {color: "#0f0", label: "prepare next day food"},
-    3: {color: "#ccc", label: "make bed"},
-    4: {color: "#f2f", label: "dinner before 23:00"}
+    0: {color: "#d11141", label: "15 minutes exercise"},
+    1: {color: "#00b159", label: "make bed"},
+    2: {color: "#00aedb", label: "dinner before 23:00"},
+    3: {color: "#f37735", label: "15 minutes reading"},
+    4: {color: "#ffc425", label: "prepare next day food"}
 }
 
 function init() {
     checkLocalStorage();
     createDateInfo();
     createCalendarStructure();
+    createInfoStructure();
 }
 
 var checkLocalStorage = () => {
 
     if(window.localStorage.currentMonth === undefined || window.localStorage.data === undefined) {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
-        let currentData = {[CURRENT_DATE.getMonth()]: {tasks: {0: {color: "#f0f", label: "15 minutes exercise"}}, data: {}}};
+        let currentData = {[CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
         localStorage.setItem("data", JSON.stringify(currentData));
         
     } else if(window.localStorage.currentMonth !== undefined && window.localStorage.currentMonth != CURRENT_DATE.getMonth()) {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
         let previousData = JSON.parse(window.localStorage.data);
-        let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {0: {color: "#f0f", label: "15 minutes exercise"}}, data: {}}};
+        let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
         // let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {}};
         localStorage.setItem("data", JSON.stringify(currentData));
 
@@ -88,6 +89,24 @@ var createDateInfo = () => {
         document.getElementById("daysLabels").appendChild(dayLabel);
     });
     document.getElementById("monthLabel").innerText = MONTH_NAMES[CURRENT_DATE.getMonth()];
+}
+
+var createInfoStructure = () => {    
+    let taskSquares = document.querySelectorAll("#taskLabels > li span");
+
+    for(let i = 0; i < 5; i++) {
+        let task = document.createElement("div");
+        let day = document.createElement("div");
+
+        task.className = i !== 4 ? "square" : "circle";
+        day.className = "day";
+
+        taskSquares[i].style.background = TASKS[i].color;
+        task.style.background = TASKS[i].color;
+
+        task.appendChild(day);
+        document.getElementById("taskExample").appendChild(task);
+    }
 }
 
 var getTaskStatus = (day, task) => {

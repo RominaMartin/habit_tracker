@@ -1,7 +1,12 @@
+$minWidth: 450px;
+$borderColor: #999;
+
 body {
   font-family: Catamaran;
   text-align: center;
+  min-width: $minWidth;
 }
+
 @mixin styling($dayContainerDim, $calendarDim, $circleDim, $circleSpace) {
   #calendar {
     display: grid;
@@ -11,22 +16,22 @@ body {
   
   .dayContainer {
     position: relative;
-    outline: 1px solid;
+    outline: 1px solid $borderColor;
     margin-top: 1px;
     margin-left: 1px;
     display: grid;
     grid-template: 50% 50% / 50% 50%;
   }
   
-  .square:nth-child(1) {border-bottom: 1px solid; border-right:  1px solid;}
-  .square:nth-child(2) {border-bottom: 1px solid;}
-  .square:nth-child(3) {border-right:  1px solid;}
+  .square:nth-child(1) {border-bottom: 1px solid $borderColor; border-right:  1px solid $borderColor;}
+  .square:nth-child(2) {border-bottom: 1px solid $borderColor;}
+  .square:nth-child(3) {border-right:  1px solid $borderColor;}
   
   .dayContainer .circle {
     position: absolute;
     background: white;
     border-radius: 50%;
-    border: 1px solid;
+    border: 1px solid $borderColor;
     z-index: 0;
     width: $circleDim;
     height: $circleDim;
@@ -55,20 +60,23 @@ body {
   #monthLabel {
     margin: 0;
   }
-  
+
   #info {
     width: $calendarDim;
     margin: 0 auto;
   }
-  
+
   #taskLabels {
-    width: 50%;
+    width: $calendarDim - $dayContainerDim;
     text-align: left;
     list-style: none;
-    padding: 10px;
+    padding: 0;
+    float: left;
+    
   }
   #taskLabels > li {
     font-size: $circleDim/2;
+    min-width: 230px;
   }
   
   #taskLabels > li span {
@@ -76,13 +84,37 @@ body {
     height: 1.5vw;
     display: inline-block;
     margin-right: 1vw;
-    background: red;
+    // background: red;
     position: relative;
     top: .45vw;
   }
+  #taskLabels > li input {
+    border: none;
+    border-bottom: 1px solid $borderColor;
+    padding: 5px;
+    padding-bottom: 0;
+    outline: none;
+    width: 70%;
+  } 
+
+  #taskExample {
+    width: $dayContainerDim;
+    height: $dayContainerDim;
+    position: relative;
+    top: 50px;
+  }
 }
 
-@media screen and (max-width: 1170px) {
+@media screen and (max-width: 700px) {
+  @include styling(
+    $dayContainerDim: 54px,
+    $calendarDim: 54px * 7,
+    $circleDim: 20px,
+    $circleSpace: -5px
+  );
+}
+
+@media screen and (min-width: 700px) and (max-width: 1170px) {
   @include styling(
     $dayContainerDim: 7vw,
     $calendarDim: 7vw * 7,
