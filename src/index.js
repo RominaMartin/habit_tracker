@@ -23,20 +23,16 @@ function init() {
 var checkLocalStorage = () => {
 
     if(window.localStorage.currentMonth === undefined || window.localStorage.data === undefined) {
-        console.log("IF");
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
         let currentData = {[CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
         localStorage.setItem("data", JSON.stringify(currentData));
         
     } else if(window.localStorage.currentMonth !== undefined && window.localStorage.currentMonth != CURRENT_DATE.getMonth()) {
-        console.log("ELSE");
         if(getCurrentLocalStorageData() === undefined) {
             localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
             let previousData = JSON.parse(window.localStorage.data);
             let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
-            
-            console.log(previousData);
-            console.log(currentData);
+
             localStorage.setItem("data", JSON.stringify(currentData));
         }
         // alert("Month changed!");
@@ -48,9 +44,6 @@ var createCalendarStructure = () => {
     const days = getDaysFromCurrentMonth();
     const startDay = getMonthDayStart();
     let currentData = getCurrentLocalStorageData().data;
-
-    console.log("currentDAta");
-    console.log(currentData);
 
     for(let i = 0; i < (days + startDay); i++) {
         let dayContainer = document.createElement("div");

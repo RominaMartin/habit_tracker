@@ -1,5 +1,5 @@
 $minWidth: 450px;
-$borderColor: #999;
+$borderColor: #555;
 $baseTextColor: #666;
 $emptyDayColor: #eee;
 
@@ -112,6 +112,35 @@ body {
   .emptyDay {
     background: $emptyDayColor;
   }
+
+  #about {
+    a {
+      display: inline-block;
+      height: 2.5em;
+    }
+    a img { 
+      height: 1.5em;
+    }
+
+    .mySocial {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+    }
+    .seanSocial {
+      position: absolute;
+      bottom: 10px;
+      left: 25px;
+      min-width: $minWidth + 20;
+
+      a img {
+        border-radius: 50%;
+        position: relative;
+        top: 5px;
+      }
+    }
+  }
+
 }
 
 @media screen and (max-width: 700px) {
@@ -123,7 +152,7 @@ body {
   );
 }
 
-@media screen and (min-width: 700px) and (max-width: 1170px) {
+@media screen and (min-width: 700px) and (max-width: 1050px) {
   @include styling(
     $dayContainerDim: 7vw,
     $calendarDim: 7vw * 7,
@@ -132,7 +161,7 @@ body {
   );
 }
 
-@media screen and (min-width: 1170px) {
+@media screen and (min-width: 1050px) {
   @include styling(
     $dayContainerDim: 5vw,
     $calendarDim: 5vw * 7,
