@@ -1,5 +1,5 @@
 $minWidth: 450px;
-$borderColor: #555;
+$borderColor: #333;
 $baseTextColor: #666;
 $emptyDayColor: #eee;
 
@@ -91,6 +91,7 @@ body {
     // background: red;
     position: relative;
     top: .45vw;
+    border: 1px solid $borderColor;
   }
   #taskLabels > li input {
     border: none;
