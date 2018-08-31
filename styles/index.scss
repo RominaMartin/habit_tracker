@@ -59,10 +59,25 @@ body {
     width: $dayContainerDim;
     display: inline-block;
   }
+
+  #month {
+    // width: $calendarDim;
+    margin: 0 auto;
+    display: inline;
+
+    div {
+      display: inline;
+      cursor: pointer;
+    }
+  }
   
   #monthLabel {
     margin: 0;
+    cursor: default;
     text-shadow: 2px 2px 2px #ccc;
+    display: inline;
+    padding: 0 1em;
+    user-select: none;
   }
 
   #info {
@@ -141,7 +156,9 @@ body {
       }
     }
   }
-
+  .hidden {
+    visibility: hidden;
+  }
 }
 
 @media screen and (max-width: 700px) {

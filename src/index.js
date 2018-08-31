@@ -3,8 +3,10 @@ import "../styles/index.scss";
 const CALENDAR = document.getElementById("calendar");
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-// const CURRENT_DATE = new Date();
-const CURRENT_DATE = new Date(2018, 8);
+const CURRENT_DATE = new Date();
+// const CURRENT_DATE = new Date(2018, 9);
+let selectedMonth = CURRENT_DATE.getMonth();
+let availableMonths = [CURRENT_DATE.getMonth()];
 
 let EXAMPLE_TASKS = {
     0: {color: "#d11141", label: "Wake up at 7:00"},
@@ -22,15 +24,15 @@ function init() {
 }
 
 var checkLocalStorage = () => {
-
     if(window.localStorage.currentMonth === undefined || window.localStorage.data === undefined) {
         localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
-        let currentData = {[CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
+        let currentData = {[CURRENT_DATE.getMonth()]: {tasks: EXAMPLE_TASKS, data: {}}};
         localStorage.setItem("data", JSON.stringify(currentData));
     } else if(window.localStorage.currentMonth !== undefined && window.localStorage.currentMonth != CURRENT_DATE.getMonth()) {
+        let previousData = JSON.parse(window.localStorage.data);
+
         if(getCurrentLocalStorageData() === undefined) {
             let confirmLoadPrevious = confirm("Do you want to load your previous habits?");
-            let previousData = JSON.parse(window.localStorage.data);
 
             let tasks = {};
 
@@ -44,6 +46,52 @@ var checkLocalStorage = () => {
 
         }
     }
+    availableMonths = Object.keys(JSON.parse(window.localStorage.data));
+}
+
+var changeMonth = (month) => {
+    selectedMonth = month;
+    document.getElementById("monthLabel").innerText = MONTH_NAMES[selectedMonth];
+    checkMonthsAvailability();
+    updateTasks();
+    setCalendarData();
+}
+
+var updateTasks = () => {
+    let inputs = document.querySelectorAll("#taskLabels input");
+
+    inputs.forEach((task, i) => {
+        taskNameChanged(i);
+    })
+}
+
+var setCalendarData = () => {
+    let days = document.querySelectorAll("#calendar .dayContainer");
+    const startDay = getMonthDayStart();
+    const monthDays = getDaysFromCurrentMonth();
+    let currentData = getCurrentLocalStorageData().data;
+
+    days.forEach((day, i) => {
+        let daySquare = day.children;
+        let dayNumber = i - startDay;
+        if(i < startDay || dayNumber >= monthDays) {
+            if(i < startDay) day.classList.add("emptyDay");
+
+            for(let square = 0; square < daySquare.length; square++) {
+                daySquare[square].classList.add("hidden");
+            };
+            
+        } else if(dayNumber < days.length) {
+            day.classList.remove("emptyDay");
+
+            for(let j = 0; j < daySquare.length; j++) {
+                daySquare[j].classList.remove("hidden");
+                daySquare[4].firstElementChild.innerText = j === 4 ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
+                
+                setColorTaskBackground(daySquare[j], j, currentData[dayNumber][j]);
+            }
+        }
+    }) 
 }
 
 var createCalendarStructure = () => {
@@ -51,36 +99,37 @@ var createCalendarStructure = () => {
     const startDay = getMonthDayStart();
     let currentData = getCurrentLocalStorageData().data;
 
-    for(let i = 0; i < (days + startDay); i++) {
+    for(let i = 0; i < 35; i++) {
         let dayContainer = document.createElement("div");
         dayContainer.className = "dayContainer";
-        if(i < startDay) {
-            dayContainer.className += " emptyDay";
-            // Add class to empty start
-        } else {
-            let dayNumber = i - startDay;
 
-            if(currentData[dayNumber] === undefined)
-                currentData[dayNumber] = {};
+        let dayNumber = i - startDay;
 
-            for(let j = 0; j < 5; j++) {
-                if(Object.keys(currentData[dayNumber]).length < 5) {
-                    currentData[dayNumber][j] = false;
-                }
+        if(currentData[dayNumber] === undefined)
+            currentData[dayNumber] = {};
 
-                let task = document.createElement("div");
-                let day = document.createElement("div");
-    
-                task.className = j !== 4 ? "square" : "circle";
-                day.className = "day";
-                day.innerText = task.className === "circle" ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
-                
-                setColorTaskBackground(task, j, currentData[dayNumber][j]);
-
-                task.onclick = () => {toggleTaskActive(dayNumber, j, task)};
-                task.appendChild(day);
-                dayContainer.appendChild(task);
+        for(let j = 0; j < 5; j++) {
+            if(Object.keys(currentData[dayNumber]).length < 5) {
+                currentData[dayNumber][j] = false;
             }
+
+            let task = document.createElement("div");
+            let day = document.createElement("div");
+
+            task.className = j !== 4 ? "square" : "circle";
+            day.className = "day";
+
+            if(i >= startDay && dayNumber < days) {
+                day.innerText = task.className === "circle" ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
+                setColorTaskBackground(task, j, currentData[dayNumber][j]);
+                task.onclick = () => {toggleTaskActive(dayNumber, j, task)};
+            } else {
+                if(i < startDay) dayContainer.classList.add("emptyDay");
+                task.classList.add("hidden");
+            }
+
+            task.appendChild(day);
+            dayContainer.appendChild(task);
         }
 
         let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: getCurrentLocalStorageData().tasks, data: currentData}};
@@ -92,12 +141,14 @@ var createCalendarStructure = () => {
 }
 
 var createDateInfo = () => {
+    checkMonthsAvailability();
+
     DAY_NAMES.forEach(day => {
         let dayLabel = document.createElement("span");
         dayLabel.textContent = day;
         document.getElementById("daysLabels").appendChild(dayLabel);
     });
-    document.getElementById("monthLabel").innerText = MONTH_NAMES[CURRENT_DATE.getMonth()];
+    document.getElementById("monthLabel").innerText = MONTH_NAMES[selectedMonth];
 }
 
 var createInfoStructure = () => {    
@@ -125,9 +176,6 @@ var createInfoStructure = () => {
             labelSquare.style.background = EXAMPLE_TASKS[i].color;
             task.style.background = EXAMPLE_TASKS[i].color;
         }
-        // input.value = TASKS[i].label;
-        // labelSquare.style.background = TASKS[i].color;
-        // task.style.background = TASKS[i].color;
 
         input.onchange = (inputData) => {taskNameChanged(i, inputData)};
 
@@ -142,15 +190,16 @@ var createInfoStructure = () => {
 }
 
 var taskNameChanged = (task, inputData) => {
-    let value = inputData.target.value;
-    let colorContainers = getTaskSquares();
-
     let current = getCurrentLocalStorageData();
     let currentTasks = current.tasks;
 
+    let value = inputData === undefined ? currentTasks[task].label : inputData.target.value;
+    let colorContainers = getTaskSquares();
+
     currentTasks = {...currentTasks, [task]: {color: colorContainers[task].style.background, label: value}};
 
-    let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: currentTasks, data: current.data}};
+    document.querySelectorAll("#taskLabels input")[task].value = value;
+    let thisMonthData = {[selectedMonth]: {tasks: currentTasks, data: current.data}};
     let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
     localStorage.setItem("data", JSON.stringify(data));
 }
@@ -164,13 +213,14 @@ var setTaskStatus = (day, task, status) => {
     let currentData = getCurrentLocalStorageData().data;
     currentData[day][task] = status;
 
-    let thisMonthData = {[CURRENT_DATE.getMonth()]: {tasks: getCurrentLocalStorageData().tasks, data: currentData}};
+    let thisMonthData = {[selectedMonth]: {tasks: getCurrentLocalStorageData().tasks, data: currentData}};
     let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
     localStorage.setItem("data", JSON.stringify(data));
 }
 
 var setColorTaskBackground = (element, task, completed) => {
     let currentTasks = getCurrentLocalStorageData().tasks;
+
     if(currentTasks[task] !== undefined)
         element.style.background = completed ? currentTasks[task].color : "";
     else
@@ -184,21 +234,42 @@ var toggleTaskActive = (day, task, element) => {
     setColorTaskBackground(element, task, !completed);
 }
 
+var checkMonthsAvailability = () => {
+    let nextMonth = document.getElementById("nextMonth");
+    let previousMonth = document.getElementById("previousMonth");
+
+    if(!availableMonths.includes(String(getNextMonth())))
+        nextMonth.classList.add("hidden");
+    else
+        nextMonth.classList.remove("hidden");
+
+    if(!availableMonths.includes(String(getPreviousMonth())))
+        previousMonth.classList.add("hidden");
+    else
+        previousMonth.classList.remove("hidden");
+}
+
 /*** UTILS ***/
-var getDaysFromCurrentMonth = () => new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth() + 1, 0).getDate();
+var getDaysFromCurrentMonth = () => new Date(CURRENT_DATE.getFullYear(), selectedMonth + 1, 0).getDate();
 var getMonthDayStart = () => {
-    let startDay = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), 1).getDay();
+    let startDay = new Date(CURRENT_DATE.getFullYear(), selectedMonth, 1).getDay();
     return startDay === 0 ? 6 : (startDay - 1);
 }
 
-var getCurrentLocalStorageData = () => JSON.parse(window.localStorage.data)[CURRENT_DATE.getMonth()];
+var getCurrentLocalStorageData = () => JSON.parse(window.localStorage.data)[selectedMonth];
 
 var getTaskSquares = () => document.querySelectorAll("#taskLabels > li span");
 
 var getPreviousMonth = () => {
-    let month = CURRENT_DATE.getMonth() - 1;
-
-    return month < 0 ? 12 : month;
+    let month = selectedMonth - 1;
+    return month < 0 ? 11 : month;
 }
 
+var getNextMonth = () => {
+    let month = selectedMonth + 1;
+    return month > 11 ? 0 : month;
+}
+
+document.getElementById("nextMonth").onclick = () => {changeMonth(getNextMonth())};
+document.getElementById("previousMonth").onclick = () => {changeMonth(getPreviousMonth())};
 init();
