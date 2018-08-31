@@ -3,8 +3,8 @@ import "../styles/index.scss";
 const CALENDAR = document.getElementById("calendar");
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const CURRENT_DATE = new Date();
-let NEW_DATA_CREATED = true;
+// const CURRENT_DATE = new Date();
+const CURRENT_DATE = new Date(2018, 8);
 
 let EXAMPLE_TASKS = {
     0: {color: "#d11141", label: "Wake up at 7:00"},
@@ -29,18 +29,20 @@ var checkLocalStorage = () => {
         localStorage.setItem("data", JSON.stringify(currentData));
     } else if(window.localStorage.currentMonth !== undefined && window.localStorage.currentMonth != CURRENT_DATE.getMonth()) {
         if(getCurrentLocalStorageData() === undefined) {
-            localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
+            let confirmLoadPrevious = confirm("Do you want to load your previous habits?");
             let previousData = JSON.parse(window.localStorage.data);
-            let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: {}, data: {}}};
+
+            let tasks = {};
+
+            if(confirmLoadPrevious && previousData[getPreviousMonth()] !== undefined)
+                tasks = previousData[getPreviousMonth()].tasks;
+
+            localStorage.setItem("currentMonth", CURRENT_DATE.getMonth());
+            let currentData = {...previousData, [CURRENT_DATE.getMonth()]: {tasks: tasks, data: {}}};
 
             localStorage.setItem("data", JSON.stringify(currentData));
-        } else {
-            NEW_DATA_CREATED = false;
+
         }
-        // alert("Month changed!");
-        // SHOW MONTH CHANGED!
-    } else {
-        NEW_DATA_CREATED = false;
     }
 }
 
@@ -192,5 +194,11 @@ var getMonthDayStart = () => {
 var getCurrentLocalStorageData = () => JSON.parse(window.localStorage.data)[CURRENT_DATE.getMonth()];
 
 var getTaskSquares = () => document.querySelectorAll("#taskLabels > li span");
+
+var getPreviousMonth = () => {
+    let month = CURRENT_DATE.getMonth() - 1;
+
+    return month < 0 ? 12 : month;
+}
 
 init();
