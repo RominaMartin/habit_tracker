@@ -4,6 +4,7 @@ $baseTextColor: #666;
 $emptyDayColor: #eee;
 
 body {
+  margin-top: 20px;
   font-family: Catamaran;
   text-align: center;
   min-width: $minWidth;
@@ -98,15 +99,15 @@ body {
     min-width: 230px;
   }
   
-  #taskLabels > li span {
+  #taskLabels > li input[type="color"] {
     width: 1.5vw;
     height: 1.5vw;
     display: inline-block;
     margin-right: 1vw;
-    // background: red;
     position: relative;
     top: .45vw;
     border: 1px solid $borderColor;
+    cursor: pointer;
   }
   #taskLabels > li input {
     border: none;
@@ -123,6 +124,7 @@ body {
     height: $dayContainerDim;
     position: relative;
     top: 50px;
+    cursor: pointer;
   }
   
   .emptyDay {
@@ -145,10 +147,10 @@ body {
     }
     .seanSocial {
       position: absolute;
-      bottom: 10px;
+      bottom: 0px;
       left: 25px;
       min-width: $minWidth + 20;
-
+      a {height: auto;}
       a img {
         border-radius: 50%;
         position: relative;
@@ -159,9 +161,14 @@ body {
   .hidden {
     visibility: hidden;
   }
+
+  input::-webkit-color-swatch {
+    border: none;
+  }
+
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 900px) {
   @include styling(
     $dayContainerDim: 54px,
     $calendarDim: 54px * 7,
@@ -170,16 +177,16 @@ body {
   );
 }
 
-@media screen and (min-width: 700px) and (max-width: 1050px) {
-  @include styling(
-    $dayContainerDim: 7vw,
-    $calendarDim: 7vw * 7,
-    $circleDim: 2vw,
-    $circleSpace: 0.25vw
-  );
-}
+// @media screen and (min-width: 900px) and (max-width: 1050px) {
+//   @include styling(
+//     $dayContainerDim: 7vw,
+//     $calendarDim: 7vw * 7,
+//     $circleDim: 2vw,
+//     $circleSpace: 0.25vw
+//   );
+// }
 
-@media screen and (min-width: 1050px) {
+@media screen and (min-width: 900px) {
   @include styling(
     $dayContainerDim: 5vw,
     $calendarDim: 5vw * 7,

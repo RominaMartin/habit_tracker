@@ -58,9 +58,10 @@ var changeMonth = (month) => {
 }
 
 var updateTasks = () => {
-    let inputs = document.querySelectorAll("#taskLabels input");
+    let inputs = document.querySelectorAll("#taskLabels input[type='text']");
 
     inputs.forEach((task, i) => {
+        colorSquareChanged(i);
         taskNameChanged(i);
     })
 }
@@ -76,18 +77,17 @@ var setCalendarData = () => {
         let dayNumber = i - startDay;
         if(i < startDay || dayNumber >= monthDays) {
             if(i < startDay) day.classList.add("emptyDay");
-
+            
             for(let square = 0; square < daySquare.length; square++) {
                 daySquare[square].classList.add("hidden");
             };
             
-        } else if(dayNumber < days.length) {
+        } else if(dayNumber < monthDays) {
             day.classList.remove("emptyDay");
 
             for(let j = 0; j < daySquare.length; j++) {
                 daySquare[j].classList.remove("hidden");
                 daySquare[4].firstElementChild.innerText = j === 4 ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
-                
                 setColorTaskBackground(daySquare[j], j, currentData[dayNumber][j]);
             }
         }
@@ -104,12 +104,12 @@ var createCalendarStructure = () => {
         dayContainer.className = "dayContainer";
 
         let dayNumber = i - startDay;
-
-        if(currentData[dayNumber] === undefined)
+        let dayIsPositive = i >= startDay;
+        if(currentData[dayNumber] === undefined && dayIsPositive)
             currentData[dayNumber] = {};
 
         for(let j = 0; j < 5; j++) {
-            if(Object.keys(currentData[dayNumber]).length < 5) {
+            if(dayIsPositive && (Object.keys(currentData[dayNumber]).length < 5)) {
                 currentData[dayNumber][j] = false;
             }
 
@@ -157,29 +157,34 @@ var createInfoStructure = () => {
     for(let i = 0; i < 5; i++) {
         let label = document.createElement("li");
         let input = document.createElement("input");
-        let labelSquare = document.createElement("span");
+        let labelSquare = document.createElement("input");
+        input.type = "text";
+        labelSquare.type = "color";
+        labelSquare.className = "squareLabel";
 
 
         let task = document.createElement("div");
         let day = document.createElement("div");
-        
+
         task.className = i !== 4 ? "square" : "circle";
         day.className = "day";
-        
         
         if(loadedTasks[i] !== undefined) {
             input.value = loadedTasks[i].label;
             labelSquare.style.background = loadedTasks[i].color;
+            labelSquare.value = rgbToHex(loadedTasks[i].color)
             task.style.background = loadedTasks[i].color;
         } else {
             input.value = EXAMPLE_TASKS[i].label;
+            labelSquare.value = rgbToHex(EXAMPLE_TASKS[i].color)
             labelSquare.style.background = EXAMPLE_TASKS[i].color;
             task.style.background = EXAMPLE_TASKS[i].color;
         }
 
         input.onchange = (inputData) => {taskNameChanged(i, inputData)};
+        labelSquare.onchange = (inputColor) => {colorSquareChanged(i, inputColor)};
+        task.onclick = () => {labelSquare.click();}
 
-        
         label.appendChild(labelSquare);
         label.appendChild(input);
         document.getElementById("taskLabels").appendChild(label);
@@ -187,6 +192,36 @@ var createInfoStructure = () => {
         task.appendChild(day);
         document.getElementById("taskExample").appendChild(task);
     }
+}
+
+var colorSquareChanged = (task, inputColor) => {
+    let current = getCurrentLocalStorageData();
+    let currentTasks = current.tasks;
+    let value = inputColor === undefined ? currentTasks[task].color : inputColor.target.value;
+    let currentItem = document.querySelectorAll("#taskLabels input[type='color']")[task];
+
+    value = rgbToHex(value);
+    currentItem.value = value;
+    currentItem.style.background = value;
+    document.getElementById("taskExample").children[task].style.background = value;
+
+    currentTasks = {...currentTasks, [task]: {color: value, label: document.querySelectorAll("#taskLabels input[type='text']")[task].value}};
+
+    let thisMonthData = {[selectedMonth]: {tasks: currentTasks, data: current.data}};
+    let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
+    localStorage.setItem("data", JSON.stringify(data));
+
+    let allTasks = document.querySelectorAll("#calendar .dayContainer:not(.emptyDay)");
+    current = getCurrentLocalStorageData();
+
+    allTasks.forEach((square, task) => {
+        let children = square.children;
+        for(let i = 0; i < 5; i++) {
+            if(current.tasks[i] !== undefined && current.data[task] !== undefined && current.data[task][i])
+                children[i].style.background = current.tasks[i].color;
+        }
+    })
+
 }
 
 var taskNameChanged = (task, inputData) => {
@@ -198,7 +233,7 @@ var taskNameChanged = (task, inputData) => {
 
     currentTasks = {...currentTasks, [task]: {color: colorContainers[task].style.background, label: value}};
 
-    document.querySelectorAll("#taskLabels input")[task].value = value;
+    document.querySelectorAll("#taskLabels input[type='text']")[task].value = value;
     let thisMonthData = {[selectedMonth]: {tasks: currentTasks, data: current.data}};
     let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
     localStorage.setItem("data", JSON.stringify(data));
@@ -258,7 +293,7 @@ var getMonthDayStart = () => {
 
 var getCurrentLocalStorageData = () => JSON.parse(window.localStorage.data)[selectedMonth];
 
-var getTaskSquares = () => document.querySelectorAll("#taskLabels > li span");
+var getTaskSquares = () => document.querySelectorAll("#taskLabels > li input[type='color']");
 
 var getPreviousMonth = () => {
     let month = selectedMonth - 1;
@@ -270,6 +305,15 @@ var getNextMonth = () => {
     return month > 11 ? 0 : month;
 }
 
+var rgbToHex = (rgb) => {
+    if(rgb.includes("#")) return rgb;
+    rgb = rgb.replace(/(rgb)|\(|\)/g, '')
+                           .split(',')
+                           .map(val => Number(val));
+    return rgb.reduce((acc,val) => acc + (0 + val.toString(16)).slice(-2), '#');
+}
+
 document.getElementById("nextMonth").onclick = () => {changeMonth(getNextMonth())};
 document.getElementById("previousMonth").onclick = () => {changeMonth(getPreviousMonth())};
+
 init();
