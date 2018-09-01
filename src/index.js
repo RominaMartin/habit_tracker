@@ -206,7 +206,7 @@ var colorSquareChanged = (task, inputColor) => {
     currentItem.style.background = value;
     document.getElementById("taskExample").children[task].style.background = value;
 
-    currentTasks = {...currentTasks, [task]: {color: value, label: document.querySelectorAll("#taskLabels input[type='text']")[task].value}};
+    currentTasks = {...currentTasks, [task]: {color: value, label: currentTasks[task].label}};
 
     let thisMonthData = {[selectedMonth]: {tasks: currentTasks, data: current.data}};
     let data = {...JSON.parse(window.localStorage.data), ...thisMonthData};
@@ -229,6 +229,7 @@ var taskNameChanged = (task, inputData) => {
     let current = getCurrentLocalStorageData();
     let currentTasks = current.tasks;
 
+    
     let value = inputData === undefined ? currentTasks[task].label : inputData.target.value;
     let colorContainers = getTaskSquares();
 

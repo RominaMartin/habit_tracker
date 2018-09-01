@@ -95,7 +95,7 @@ body {
     
   }
   #taskLabels > li {
-    font-size: $circleDim/2;
+    // font-size: $circleDim/2;
     min-width: 230px;
   }
   
@@ -105,7 +105,7 @@ body {
     display: inline-block;
     margin-right: 1vw;
     position: relative;
-    top: .45vw;
+    top: 0;
     border: 1px solid $borderColor;
     cursor: pointer;
   }
@@ -117,6 +117,7 @@ body {
     outline: none;
     width: 70%;
     color: $baseTextColor;
+    font-size: 1vw;
   } 
 
   #taskExample {
@@ -193,4 +194,8 @@ body {
     $circleDim: 1.5vw,
     $circleSpace: 0.25vw
   );
+
+  body {
+    overflow-x: hidden;
+  }
 }
