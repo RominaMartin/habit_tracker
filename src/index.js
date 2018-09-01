@@ -4,7 +4,7 @@ const CALENDAR = document.getElementById("calendar");
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const CURRENT_DATE = new Date();
-// const CURRENT_DATE = new Date(2018, 9);
+
 let selectedMonth = CURRENT_DATE.getMonth();
 let availableMonths = [CURRENT_DATE.getMonth()];
 
@@ -84,8 +84,9 @@ var setCalendarData = () => {
             
         } else if(dayNumber < monthDays) {
             day.classList.remove("emptyDay");
-
             for(let j = 0; j < daySquare.length; j++) {
+                daySquare[j].onclick = () => {toggleTaskActive(dayNumber, j, daySquare[j])};
+
                 daySquare[j].classList.remove("hidden");
                 daySquare[4].firstElementChild.innerText = j === 4 ? (dayNumber < 9 ? `0${dayNumber + 1}` : dayNumber + 1) : "";
                 setColorTaskBackground(daySquare[j], j, currentData[dayNumber][j]);
@@ -127,7 +128,7 @@ var createCalendarStructure = () => {
                 if(i < startDay) dayContainer.classList.add("emptyDay");
                 task.classList.add("hidden");
             }
-
+            
             task.appendChild(day);
             dayContainer.appendChild(task);
         }
